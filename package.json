@@ -11,13 +11,14 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.1.0",
+    "@reduxjs/toolkit": "^2.2.5",
     "dotenv": "^17.2.3",
     "next": "^16.0.10",
     "pg": "^8.16.3",
     "react": "19.2.1",
     "react-dom": "19.2.1",
-    "@reduxjs/toolkit": "^2.2.5",
     "react-redux": "^9.1.2",
+    "recharts": "^3.5.1",
     "redux-persist": "^6.0.0"
   },
   "devDependencies": {
