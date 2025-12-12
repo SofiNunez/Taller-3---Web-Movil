@@ -3,6 +3,12 @@
 #Tomás Méndez Díaz - 21431877-6
 
 #Matias Portilla Cortez - 21.007.236-5
+
+#Este proyecto se basa en una cafetería ficticia que contiene sus productos y sus pedidos con un dashboard con las estadísticas de los pedidos de esta cafetería.
+#Para ejecutar el proyecto usamos:
+#npm install (para instalar dependencias), npx prisma migrate dev --name init (para ejecutar las migraciones del prisma), docker-compose up (para levantar la base de datos) y finalmente npm run dev.
+#en localhost:3000/orders está la información de los pedidos.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
 ## Getting Started
