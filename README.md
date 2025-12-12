@@ -8,6 +8,8 @@
 #Para ejecutar el proyecto usamos:
 #npm install (para instalar dependencias), npx prisma migrate dev --name init (para ejecutar las migraciones del prisma), docker-compose up (para levantar la base de datos) y finalmente npm run dev.
 #en localhost:3000/orders está la información de los pedidos.
+#en localhost:3000/dashboard esta el dashboard
+
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
