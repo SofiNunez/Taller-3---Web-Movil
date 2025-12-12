@@ -2,6 +2,7 @@
 
 #Tomás Méndez Díaz - 21431877-6
 
+#Matias Portilla Cortez - 21.007.236-5
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
 ## Getting Started
