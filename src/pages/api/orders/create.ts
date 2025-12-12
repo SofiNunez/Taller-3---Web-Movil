@@ -12,27 +12,6 @@ const prisma = new PrismaClient({
 });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'GET') {
-    try {
-      const orders = await prisma.order.findMany({
-        include: {
-          user: true,
-          orderItems: {
-            include: {
-              product: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-      return res.status(200).json({ success: true, data: orders });
-    } catch (error) {
-      console.error('Error al obtener pedidos:', error);
-      return res.status(500).json({ success: false, error: 'Error al obtener pedidos' });
-    }
-  }
 
   if (req.method === 'POST') {
     try {
@@ -117,6 +96,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }
 
-  res.setHeader('Allow', ['GET', 'POST']);
+  res.setHeader('Allow', ['POST']);
   return res.status(405).json({ success: false, error: `Método ${req.method} no permitido` });
 }
