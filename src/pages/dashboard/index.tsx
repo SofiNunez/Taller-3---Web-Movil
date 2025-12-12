@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
-import { setDate, setStatus, resetFilters } from "../../store/slices/filtersSlice";
+import { setDate, setStatus, setProductId, resetFilters } from "../../store/slices/filtersSlice";
 
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -19,17 +19,32 @@ function formatDate(dateString: string) {
 
 export default function Dashboard() {
   const dispatch = useDispatch();
-  const filters = useSelector((state: RootState) => state.filters);
-  const [stats, setStats] = useState<any>(null);
 
-  // FETCH
+  const filters = useSelector((state: RootState) => state.filters);
+
+  const [stats, setStats] = useState<any>(null);
+  const [products, setProducts] = useState<any[]>([]);
+
+  /* ---------------------------------------------------
+     CARGAR PRODUCTOS DINÁMICOS
+  ---------------------------------------------------- */
+  useEffect(() => {
+    fetch("/api/dashboard/products")
+      .then((res) => res.json())
+      .then((data) => setProducts(data));
+  }, []);
+
+  /* ---------------------------------------------------
+     FETCH PRINCIPAL: STATS
+  ---------------------------------------------------- */
   useEffect(() => {
     const params = new URLSearchParams();
 
     if (filters.selectedDate) params.append("date", filters.selectedDate);
     if (filters.status) params.append("status", filters.status);
+    if (filters.productId) params.append("productId", filters.productId);
 
-    const url = "/api/dashboard/stats" + (params.toString() ? "?" + params.toString() : "");
+    const url = "/api/dashboard/stats" + (params.toString() ? `?${params}` : "");
 
     fetch(url)
       .then((res) => res.json())
@@ -39,6 +54,9 @@ export default function Dashboard() {
   if (!stats)
     return <p className="text-white text-center mt-10">Cargando dashboard...</p>;
 
+  /* ---------------------------------------------------
+     PIE CHART DATA
+  ---------------------------------------------------- */
   const statusData = [
     { name: "Pendiente", value: stats.pending },
     { name: "Completado", value: stats.completed },
@@ -52,15 +70,17 @@ export default function Dashboard() {
     <div className="min-h-screen bg-neutral-900 text-white p-8">
       <h1 className="text-3xl font-bold mb-8">📊 Dashboard de Pedidos</h1>
 
-      {/* FILTROS */}
+      {/* ---------------------------------------------------
+         FILTROS
+      ---------------------------------------------------- */}
       <div className="flex gap-6 mb-10 items-end bg-neutral-800 p-5 rounded-xl shadow-lg border border-neutral-700">
-        
+
         {/* Fecha */}
         <div className="flex flex-col">
           <label className="mb-1 text-sm opacity-80">Fecha</label>
           <input
             type="date"
-            value={filters.selectedDate ?? ""}   // <--- CONTROLADO
+            value={filters.selectedDate ?? ""}
             className="p-2 bg-neutral-700 text-white rounded focus:ring focus:ring-blue-500"
             onChange={(e) => dispatch(setDate(e.target.value))}
           />
@@ -70,7 +90,7 @@ export default function Dashboard() {
         <div className="flex flex-col">
           <label className="mb-1 text-sm opacity-80">Estado</label>
           <select
-            value={filters.status ?? ""}          // <--- CONTROLADO
+            value={filters.status ?? ""}
             className="p-2 bg-neutral-700 text-white rounded"
             onChange={(e) => dispatch(setStatus(e.target.value))}
           >
@@ -82,6 +102,24 @@ export default function Dashboard() {
           </select>
         </div>
 
+        {/* Producto */}
+        <div className="flex flex-col">
+          <label className="mb-1 text-sm opacity-80">Producto</label>
+          <select
+            value={filters.productId ?? ""}
+            className="p-2 bg-neutral-700 text-white rounded"
+            onChange={(e) => dispatch(setProductId(e.target.value))}
+          >
+            <option value="">Todos</option>
+            {products.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Reset */}
         <button
           onClick={() => dispatch(resetFilters())}
           className="ml-auto bg-red-600 hover:bg-red-700 px-5 py-2 rounded-lg transition font-semibold"
@@ -90,7 +128,9 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* CARDS */}
+      {/* ---------------------------------------------------
+         CARDS
+      ---------------------------------------------------- */}
       <div className="grid grid-cols-4 gap-6 mb-10">
         <Card title="Total pedidos" value={stats.totalOrders} />
         <Card title="Total ganancia" value={`$${stats.totalRevenue}`} />
@@ -98,8 +138,11 @@ export default function Dashboard() {
         <Card title="Órdenes del día" value={stats.ordersPerDay[0]?.count || 0} />
       </div>
 
+      {/* ---------------------------------------------------
+         GRÁFICOS
+      ---------------------------------------------------- */}
       <div className="space-y-16">
-        
+
         <Section title="Órdenes por día">
           <ChartBlock>
             <LineChart data={stats.ordersPerDay}>
