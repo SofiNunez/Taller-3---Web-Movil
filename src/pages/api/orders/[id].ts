@@ -4,6 +4,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { id } = req.query
-  return res.status(200).json({})
+  res.setHeader('Allow', ['GET'])
+  return res.status(501).json({ message: 'Endpoint aún no implementado' })
 }

@@ -1,20 +1,30 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient, Prisma } from "../../../../generated/prisma/client";
-import { PrismaPg } from '@prisma/adapter-pg'
-import 'dotenv/config'
-
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
-})
-
-const prisma = new PrismaClient({
-  adapter,
-});
+import { prisma } from '../../../server/prisma'
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ message: 'Method not allowed' })
+  }
 
-  return res.status(200).json(prisma.order.findMany());
+  try {
+    const orders = await prisma.order.findMany({
+      include: {
+        user: true,
+        orderItems: {
+          include: {
+            product: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return res.status(200).json(orders)
+  } catch (error) {
+    console.error('Error fetching orders:', error)
+    return res.status(500).json({ message: 'Error fetching orders' })
+  }
 }
